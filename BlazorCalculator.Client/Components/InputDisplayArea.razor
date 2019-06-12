@@ -1,0 +1,12 @@
+﻿<div class="row">
+    <div class="col-12">
+        <label>@Value</label>
+    </div>
+</div>
+
+@functions{
+    [Parameter] string Value { get; set; }
+
+    [Parameter]
+    protected Action<string> ValueChanged { get; set; }
+}

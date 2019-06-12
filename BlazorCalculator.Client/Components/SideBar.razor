@@ -1,0 +1,20 @@
+﻿<ul>
+    @foreach (var dataItem in Data)
+    {
+        switch (dataItem)
+        {
+            case ValueData d:
+                <li>@d.Value</li>
+                break;
+            case OperationData d:
+                <li>@d.Operation</li>
+                break;
+        }
+    }
+</ul>
+
+@functions{
+    [Parameter] Stack<Data> Data { get; set; }
+
+    [Parameter] Action<Stack<Data>> DataChanged { get; set; }
+}

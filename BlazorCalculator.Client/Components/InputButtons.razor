@@ -1,0 +1,113 @@
+﻿@inject IJSRuntime JsRuntime
+
+<div class="d-flex flex-row">
+    <InputButton Value="Mod" onClick="@(() => OnOperationClicked(Operation.Mod))" />
+    <InputButton Value="x^2" onClick="@(() => OnOperationClicked(Operation.Sqr))" />
+    <InputButton Value="√" onClick="@(() => OnOperationClicked(Operation.Sqrt))" />
+    <InputButton Value="←" onClick="@(() => OnOperationClicked(Operation.Back))" />
+    <InputButton Value="/" onClick="@(() => OnOperationClicked(Operation.Divide))" />
+</div>
+<div class="d-flex flex-row">
+    <InputButton Value="π" onClick="@(() => OnConstantClicked(Math.PI))" />
+    <InputButton Value="7" onClick="@(() => OnDigitClicked(7))" />
+    <InputButton Value="8" onClick="@(() => OnDigitClicked(8))" />
+    <InputButton Value="9" onClick="@(() => OnDigitClicked(9))" />
+    <InputButton Value="x" onClick="@(() => OnOperationClicked(Operation.Multiply))" />
+</div>
+<div class="d-flex flex-row">
+    <InputButton Value="n!" onClick="@(() => OnOperationClicked(Operation.Factorial))" />
+    <InputButton Value="4" onClick="@(() => OnDigitClicked(4))" />
+    <InputButton Value="5" onClick="@(() => OnDigitClicked(5))" />
+    <InputButton Value="6" onClick="@(() => OnDigitClicked(6))" />
+    <InputButton Value="-" onClick="@(() => OnOperationClicked(Operation.Substract))" />
+</div>
+<div class="d-flex flex-row">
+    <InputButton Value="±" onClick="@(() => OnOperationClicked(Operation.Inverse))" />
+    <InputButton Value="1" onClick="@(() => OnDigitClicked(1))" />
+    <InputButton Value="2" onClick="@(() => OnDigitClicked(2))" />
+    <InputButton Value="3" onClick="@(() => OnDigitClicked(3))" />
+    <InputButton Value="+" OnClick="@(() => OnOperationClicked(Operation.Add))" />
+</div>
+<div class="d-flex flex-row">
+    <InputButton Value="C" onClick="@(() => OnClearClicked())" />
+    <InputButton Value="CE" OnClick="@(() => OnClearClicked())" />
+    <InputButton Value="0" onClick="@(() => OnDigitClicked(0))" />
+    <InputButton Value="." onClick="@(() => OnOperationClicked(Operation.Fraction))" />
+    <InputButton Value="=" onClick="@(() => OnOperationClicked(Operation.Execute))" />
+</div>
+
+@functions{
+
+    [Parameter] EventCallback<DigitClickEventArgs> OnDigitClick { get; set; }
+    [Parameter] EventCallback<ConstantClickEventArgs> OnConstantClick { get; set; }
+    [Parameter] EventCallback<ClearClickedEventArgs> OnClearClick { get; set; }
+    [Parameter] EventCallback<OperationClickedEventArgs> OnOperationClick { get; set; }
+
+    [JSInvokable]
+    public async Task OnKeyPressed(string key)
+    {
+        switch (key.ToLowerInvariant())
+        {
+            case "delete":
+                await OnClearClicked();
+                break;
+            case "backspace":
+                await OnOperationClicked(Operation.Back);
+                break;
+            case "enter":
+                await OnOperationClicked(Operation.Execute);
+                break;
+            case "+":
+                await OnOperationClicked(Operation.Add);
+                break;
+            case "-":
+                await OnOperationClicked(Operation.Substract);
+                break;
+            case "*":
+                await OnOperationClicked(Operation.Multiply);
+                break;
+            case "/":
+                await OnOperationClicked(Operation.Divide);
+                break;
+            case ".":
+                await OnOperationClicked(Operation.Fraction);
+                break;
+            case "p":
+                await OnConstantClicked(Math.PI);
+                break;
+            default:
+                var isNumber = int.TryParse(key, out var number);
+                if (isNumber)
+                {
+                    await OnDigitClicked(number);
+                }
+                break;
+        }
+    }
+
+    protected override async Task OnInitAsync()
+    {
+        base.OnInit();
+        await JsRuntime.InvokeAsync<object>("window.BlazorCalculator.Utils.registerkeyPressed", new DotNetObjectRef(this));
+    }
+
+    protected async Task OnDigitClicked(int digit)
+    {
+        await OnDigitClick.InvokeAsync(new DigitClickEventArgs(digit));
+    }
+
+    protected async Task OnConstantClicked(double value)
+    {
+        await OnConstantClick.InvokeAsync(new ConstantClickEventArgs(value));
+    }
+
+    protected async Task OnClearClicked()
+    {
+        await OnClearClick.InvokeAsync(new ClearClickedEventArgs());
+    }
+
+    protected async Task OnOperationClicked(Operation op)
+    {
+        await OnOperationClick.InvokeAsync(new OperationClickedEventArgs(op));
+    }
+}

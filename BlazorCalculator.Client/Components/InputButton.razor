@@ -1,0 +1,8 @@
+﻿<button class="btn btn-light" onclick="@(() => OnClick.InvokeAsync(Value))">@Value</button>
+
+@functions{
+    [Parameter] string Value { get; set; }
+
+    [Parameter]
+    private EventCallback<string> OnClick { get; set; }
+}

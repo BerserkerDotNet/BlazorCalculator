@@ -1,0 +1,19 @@
+﻿@page "/"
+@inherits CalculatorPage
+
+<div class="row full-height">
+    <div class="col-8 full-height no-side-padding ">
+        <div class="d-flex flex-column input-text-area full-width">
+            <InputDisplayArea bind-Value="State.Current" />
+        </div>
+        <div class="d-flex flex-column buttons-area full-width">
+            <InputButtons OnClearClick="OnClear"
+                          OnDigitClick="OnNewDigit"
+                          OnConstantClick="OnConstant"
+                          OnOperationClick="OnOperation" />
+        </div>
+    </div>
+    <div class="col-4">
+        <SideBar bind-Data="State.Stack" />
+    </div>
+</div>
